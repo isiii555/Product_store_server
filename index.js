@@ -20,7 +20,7 @@ let goods = [
     product_name: "Qadın bluzası",
     product_description: "Dəri detallı, qara rəngdə",
     product_price: 60,
-    product_img : "https://emart.az/image/cache/catalog/i/hp/eb/25b1d80d89ec6e079ed2d18afb066d99-1000x1000.jpg",
+    product_img : "https://ae01.alicdn.com/kf/HTB1G.9haTnI8KJjy0Ffq6AdoVXar/Plus-Size-vetement-Fashion-Style-Women-Clothes-Blouse-Long-Sleeves-Casual-Denim-Shirt-Nostalgic-Vintage-Blue.jpg",
     store_name: "Moda Dünyası",
     store_address: "Bakı şəhəri, Nizami kuçəsi 5",
   },
@@ -273,14 +273,22 @@ app.get("/orders", (req, res) => {
 
 app.post("/add-mybag", (req, res) => {
   let obj = req.body;
-  myBag.push(obj);
-  res.send(`Element with ${obj.product_name} was added to bag`);
+  let arr = myBag.filter((product) => product.id === obj.id);
+  if (arr.length) {
+    let newObj = arr.find(product => product.id === obj.id);
+    newObj.product_quantity += 1;
+  }
+  else {
+    myBag.push({...obj,product_quantity : arr.length + 1})
+  }
+  res.send(`Element with ${obj.product_name} is added to bag`);
 });
 
 app.post("/add-orders", (req, res) => {
   let obj = req.body;
+  obj = {...obj,id : orders.length + 1};
   orders.push(obj);
-  res.send(`Orders of ${obj.ordererName} was added orders`);
+  res.send(`Orders of ${obj.ordererName} is added orders`);
 });
 
 app.delete("/delete-mybag/:id", (req, res) => {
@@ -289,8 +297,22 @@ app.delete("/delete-mybag/:id", (req, res) => {
   res.send(
     `Element with ${
       myBag.find((item) => id === item.id).product_name
-    } was deleted from bag`
+    } is deleted from bag`
   );
+});
+
+app.delete("/delete-mybag-quantity/:id", (req, res) => {
+  let id = parseInt(req.params.id);
+  let obj = myBag.find(product => product.id === id);
+  if (obj.product_quantity > 1) {
+    obj.product_quantity -= 1;
+  }
+  res.send("Request is ready!");
+});
+
+app.delete("/clear-mybag", (req, res) => {
+  myBag = [];
+  res.send("Bag is cleared");
 });
 
 app.delete("/delete-admin/:id", (req, res) => {
@@ -299,36 +321,39 @@ app.delete("/delete-admin/:id", (req, res) => {
   res.send(
     `Element ${
       goods.find((item) => id === item.id).product_name
-    } was deleted from goods`
+    } is deleted from goods`
   );
 });
 
 app.post("/add-admin", (req, res) => {
   let obj = req.body;
   goods.push(obj);
-  res.send(`Element with ${obj.product_name} was added to goods`);
+  res.send(`Element with ${obj.product_name} is added to goods`);
 });
 
 app.put("/change-admin/:id", (req, res) => {
   let id = parseInt(req.params.id);
   let index = goods.findIndex((item) => id === item.id);
   goods[index] = req.body;
-  res.send(`Element ${req.body.product_name} was changed`);
+  res.send(`Element ${req.body.product_name} is changed`);
 });
 
 app.get("/search-goods/:searchValue", (req, res) => {
   let searchValue = req.params.searchValue;
-  let filteredArray = goods.filter((item) =>
-    item.product_name.startsWith(searchValue)
+  console.log(searchValue);
+  let filteredArray = myBag.filter((item) =>
+      item.product_name.toLocaleLowerCase("AZ").startsWith(searchValue.toLocaleLowerCase("AZ"))
   );
   res.json(filteredArray);
 });
 
 app.get("/search-admin/:searchValue", (req, res) => {
   let searchValue = req.params.searchValue;
+  console.log(searchValue);
   let filteredArray = goods.filter((item) =>
-    item.product_name.startsWith(searchValue)
+    item.product_name.toLocaleLowerCase("AZ").startsWith(searchValue.toLocaleLowerCase("AZ"))
   );
+  console.log(filteredArray);
   res.json(filteredArray);
 });
 
