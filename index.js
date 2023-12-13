@@ -327,6 +327,7 @@ app.delete("/delete-admin/:id", (req, res) => {
 
 app.post("/add-admin", (req, res) => {
   let obj = req.body;
+  obj = {...obj,id : goods.length};
   goods.push(obj);
   res.send(`Element with ${obj.product_name} is added to goods`);
 });
