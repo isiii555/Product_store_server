@@ -327,7 +327,7 @@ app.delete("/delete-admin/:id", (req, res) => {
 
 app.post("/add-admin", (req, res) => {
   let obj = req.body;
-  obj = {...obj,id : goods.length};
+  obj = {...obj,id : goods.length + 1};
   goods.push(obj);
   res.send(`Element with ${obj.product_name} is added to goods`);
 });
@@ -341,8 +341,7 @@ app.put("/change-admin/:id", (req, res) => {
 
 app.get("/search-goods/:searchValue", (req, res) => {
   let searchValue = req.params.searchValue;
-  console.log(searchValue);
-  let filteredArray = myBag.filter((item) =>
+  let filteredArray = goods.filter((item) =>
       item.product_name.toLocaleLowerCase("AZ").startsWith(searchValue.toLocaleLowerCase("AZ"))
   );
   res.json(filteredArray);
@@ -350,11 +349,9 @@ app.get("/search-goods/:searchValue", (req, res) => {
 
 app.get("/search-admin/:searchValue", (req, res) => {
   let searchValue = req.params.searchValue;
-  console.log(searchValue);
   let filteredArray = goods.filter((item) =>
     item.product_name.toLocaleLowerCase("AZ").startsWith(searchValue.toLocaleLowerCase("AZ"))
   );
-  console.log(filteredArray);
   res.json(filteredArray);
 });
 
