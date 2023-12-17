@@ -281,6 +281,7 @@ app.post("/add-mybag", (req, res) => {
   else {
     myBag.push({...obj,product_quantity : arr.length + 1})
   }
+  console.log(myBag);
   res.send(`Element with ${obj.product_name} is added to bag`);
 });
 
